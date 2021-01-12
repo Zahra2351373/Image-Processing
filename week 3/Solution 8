@@ -1,0 +1,29 @@
+clear
+
+image= imread('https://d396qusza40orc.cloudfront.net/digital%2Fimages%2Fweek3_quizzes%2Foriginal_quiz.jpg');
+
+double_image = im2double(image);
+
+lpf = fspecial('average', [3, 3]);
+
+filtered_image = imfilter(double_image, lpf , 'replicate');
+croped_image = filtered_image(1:2:359, 1:2:479);
+
+new_image = zeros(359, 479);
+for i = 1:180
+    for j = 1:240
+        new_image(2 * i - 1, 2 * j - 1) = croped_image(i, j);
+    end
+end
+
+new_lpf = [0.25, 0.5, 0.25;
+    0.5, 1, 0.5;
+    0.25, 0.5, 0.25];
+
+new_filtered_image= imfilter(new_image, new_lpf);
+
+mse = sum(sum((double_image - new_filtered_image).^2)) / (size(double_image, 1) * size(double_image, 2));
+display(mse);
+
+psnr = 10 * log10(1^2 / mse);
+display(psnr);
